@@ -1,5 +1,7 @@
-﻿using eCommerce.API.Repositories;
+﻿using eCommerce.API.Models;
+using eCommerce.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace eCommerce.API.Controllers
 {
@@ -31,6 +33,20 @@ namespace eCommerce.API.Controllers
             }
 
             return Ok(usuario);
+        }
+
+        [HttpPost]
+        public IActionResult Insert([FromBody] Usuario usuario) 
+        {
+            try
+            {
+                _repository.Insert(usuario);
+                return Ok(usuario);
+            }
+            catch (Exception exception)
+            {
+                return StatusCode(500, exception.Message);
+            }
         }
     }
 }

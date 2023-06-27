@@ -102,7 +102,33 @@ namespace eCommerce.API.Repositories
 
         public void Insert(Usuario usuario)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var command = new SqlCommand();
+                command.CommandText = "INSERT INTO Usuarios(Nome, Email, Sexo, RG, CPF, NomeMae, SituacaoCadastro, DataCadastro) VALUES (@Nome, @Email, @Sexo, @RG, @CPF, @NomeMae, @SituacaoCadastro, @DataCadastro);SELECT CAST(scope_identity() AS int)";
+                command.Connection = (SqlConnection)_connection;
+
+                command.Parameters.AddWithValue("@Nome", usuario.Nome);
+                command.Parameters.AddWithValue("@Email", usuario.Email);
+                command.Parameters.AddWithValue("@Sexo", usuario.Sexo);
+                command.Parameters.AddWithValue("@RG", usuario.RG);
+                command.Parameters.AddWithValue("@CPF", usuario.CPF);
+                command.Parameters.AddWithValue("@NomeMae", usuario.NomeMae);
+                command.Parameters.AddWithValue("@SituacaoCadastro", usuario.SituacaoCadastro);
+                command.Parameters.AddWithValue("@DataCadastro", usuario.DataCadastro);
+
+                _connection.Open();
+
+                usuario.Id = (int)command.ExecuteScalar();
+            }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
+            finally
+            {
+                _connection.Close();
+            }
         }
 
         public void Update(Usuario usuario)
