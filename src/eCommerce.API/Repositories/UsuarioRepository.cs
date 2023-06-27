@@ -60,7 +60,44 @@ namespace eCommerce.API.Repositories
 
         public Usuario Get(int id)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var command = new SqlCommand();
+                command.CommandText = "SELECT * FROM Usuarios WHERE Id = @Id";
+                command.Parameters.AddWithValue("@Id", id);
+                command.Connection = (SqlConnection)_connection;
+
+                _connection.Open();
+
+                SqlDataReader dataReader = command.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    var usuario = new Usuario();
+
+                    usuario.Id = dataReader.GetInt32("Id");
+                    usuario.Nome = dataReader.GetString("Nome");
+                    usuario.Email = dataReader.GetString("Email");
+                    usuario.Sexo = dataReader.GetString("Sexo");
+                    usuario.RG = dataReader.GetString("RG");
+                    usuario.CPF = dataReader.GetString("CPF");
+                    usuario.NomeMae = dataReader.GetString("NomeMae");
+                    usuario.SituacaoCadastro = dataReader.GetString("SituacaoCadastro");
+                    usuario.DataCadastro = dataReader.GetDateTimeOffset(8);
+
+                    return usuario;
+                }
+            }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
+            finally
+            {
+                _connection.Close();
+            }
+
+            return null;
         }
 
         public void Insert(Usuario usuario)

@@ -19,5 +19,18 @@ namespace eCommerce.API.Controllers
         {
             return Ok(_repository.Get());
         }
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id) 
+        {
+            var usuario = _repository.Get(id);
+
+            if (usuario == null) 
+            {
+                return NotFound();
+            }
+
+            return Ok(usuario);
+        }
     }
 }
