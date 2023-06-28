@@ -48,5 +48,19 @@ namespace eCommerce.API.Controllers
                 return StatusCode(500, exception.Message);
             }
         }
+
+        [HttpPut]
+        public IActionResult Update([FromBody] Usuario usuario) 
+        {
+            try
+            {
+                _repository.Update(usuario);
+                return Ok(usuario);
+            }
+            catch (Exception exception)
+            {
+                return StatusCode(500, exception.Message);
+            }
+        }
     }
 }
