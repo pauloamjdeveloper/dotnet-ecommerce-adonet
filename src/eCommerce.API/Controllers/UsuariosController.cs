@@ -62,5 +62,12 @@ namespace eCommerce.API.Controllers
                 return StatusCode(500, exception.Message);
             }
         }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id) 
+        {
+            _repository.Delete(id);
+            return Ok();
+        }
     }
 }

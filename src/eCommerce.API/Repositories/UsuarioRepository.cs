@@ -165,7 +165,25 @@ namespace eCommerce.API.Repositories
 
         public void Delete(int id)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                var command = new SqlCommand();
+                command.CommandText = "DELETE FROM Usuarios WHERE Id = @Id";
+                command.Connection = (SqlConnection)_connection;
+
+                command.Parameters.AddWithValue("@Id", id);
+
+                _connection.Open();
+                command.ExecuteNonQuery();
+            }
+            catch (Exception exception)
+            {
+                throw new Exception(exception.Message);
+            }
+            finally 
+            {
+                _connection.Close();
+            }
         }
 
     }
