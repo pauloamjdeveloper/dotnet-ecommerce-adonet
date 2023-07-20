@@ -153,11 +153,17 @@ namespace eCommerce.API.Repositories
 
         public void Insert(Usuario usuario)
         {
+            _connection.Open();
+            SqlTransaction transaction = (SqlTransaction)_connection.BeginTransaction();
+
             try
             {
                 var command = new SqlCommand();
-                command.CommandText = "INSERT INTO Usuarios(Nome, Email, Sexo, RG, CPF, NomeMae, SituacaoCadastro, DataCadastro) VALUES (@Nome, @Email, @Sexo, @RG, @CPF, @NomeMae, @SituacaoCadastro, @DataCadastro);SELECT CAST(scope_identity() AS int)";
+                command.Transaction = transaction;
                 command.Connection = (SqlConnection)_connection;
+
+                command.CommandText = "INSERT INTO Usuarios(Nome, Email, Sexo, RG, CPF, NomeMae, SituacaoCadastro, DataCadastro) VALUES (@Nome, @Email, @Sexo, @RG, @CPF, @NomeMae, @SituacaoCadastro, @DataCadastro);SELECT CAST(scope_identity() AS int)";
+                
 
                 command.Parameters.AddWithValue("@Nome", usuario.Nome);
                 command.Parameters.AddWithValue("@Email", usuario.Email);
@@ -184,6 +190,7 @@ namespace eCommerce.API.Repositories
                 {
                     command = new SqlCommand();
                     command.Connection = (SqlConnection)_connection;
+                    command.Transaction = transaction;
 
                     command.CommandText = "INSERT INTO EnderecosEntrega (UsuarioId, NomeEndereco, CEP, Estado, Cidade, Bairro, Endereco, Numero, Complemento) VALUES (@UsuarioId, @NomeEndereco, @CEP, @Estado, @Cidade, @Bairro, @Endereco, @Numero, @Complemento); SELECT CAST(scope_identity() AS int)";
                     command.Parameters.AddWithValue("@UsuarioId", usuario.Id);
@@ -204,6 +211,7 @@ namespace eCommerce.API.Repositories
                 {
                     command = new SqlCommand();
                     command.Connection = (SqlConnection)_connection;
+                    command.Transaction = transaction;
 
                     command.CommandText = "INSERT INTO UsuariosDepartamentos (UsuarioId, DepartamentoId) VALUES (@UsuarioId, @DepartamentoId);";
                     command.Parameters.AddWithValue("@UsuarioId", usuario.Id);
@@ -211,10 +219,20 @@ namespace eCommerce.API.Repositories
 
                     command.ExecuteNonQuery();
                 }
+
+                transaction.Commit();
             }
             catch (Exception exception)
             {
-                throw new Exception(exception.Message);
+                try
+                {
+                    transaction.Rollback();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+                throw new Exception("Erro ao tentar inserir os dados!");
             }
             finally
             {
