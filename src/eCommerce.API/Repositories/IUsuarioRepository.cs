@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace eCommerce.API.Repositories
 {
-    internal interface IUsuarioRepository
+    public interface IUsuarioRepository
     {
         public List<Usuario> Get();
         public Usuario Get(int id);
